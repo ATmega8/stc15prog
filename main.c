@@ -23,16 +23,37 @@ int main(int argc, char** argv)
 
     char dev[] = "/dev/ttyUSB0";
     char TXBuf[] = {0x7F};
-
+    struct aiocb serial_aio;
 
     fd = SERIAL_Open(dev);
-    SERIAL_SetBaudRate(B1200, fd);
+
+    if(SERIAL_SetBaudRate(B1200, fd) == -1)
+    {
+        printf("set baud error\n");
+        return -1;
+    }
 
     if(SERIAL_SetDataParityStop(8, 1, 'N', fd) == -1)
     {
         printf("set parity or data or stop error\n");
         return -1;
     }
+
+    memset((char*)&serial_aio, '\0', sizeof(struct aiocb));
+
+    /*异步串口读写初始化*/
+    serial_aio.aio_buf = &buf;
+    serial_aio.aio_fildes = fd;
+    serial_aio.aio_nbytes = sizeof(buf);
+    serial_aio.aio_offset = 0;
+
+    /*串口回调函数初始化*/
+    serial_aio.aio_sigevent.sigev_notify = SIGEV_THREAD;
+    serial_aio.aio_sigevent.sigev_notify_function =
+        serial_aio_handler;
+    serial_aio.aio_sigevent.sigev_notify_attributes = NULL;
+    serial_aio.aio_sigevent.sigev_value.sival_ptr = &serial_aio;
+
 
     while(1)
     {
@@ -45,17 +66,8 @@ int main(int argc, char** argv)
         /*等待10ms*/
         usleep(10000);
 
-        nread = aio_read(&serial_aio);
+        aio_read(&serial_aio);
 
-        /*if(nread < 0)
-            perror("aio_read");
-
-        if(aio_error(&serial_aio) != EINPROGRESS )
-        {
-            printf("OK\n");
-            if((nread = aio_return(&serial_aio)) > 0)
-                printf("\n%s", buf);
-        }*/
     }
 
     return 0;
@@ -64,7 +76,7 @@ int main(int argc, char** argv)
 void serial_aio_handler(sigval_t sigval)
 {
     struct aiocb *req;
-    int ret /*, i*/;
+    int ret;
 
     req = (struct aiocb*)sigval.sival_ptr;
 
@@ -75,24 +87,8 @@ void serial_aio_handler(sigval_t sigval)
 
         if(ret > 0)
         {
-            switch(RxCount)
-            {
-                case 1:
-                    if(buf != 0xB9)
-                        return;
-                    RxCount++;
-                    break;
 
-                case 2:
-                    if(buf != 0x68)
-                        return;
-                    RxCount++;
-                    break;
-            }
         }
-        /*printf("Return Data:\n");
-        for(i = 0; i < ret; i++)
-            printf("0x%X\n", buf);8*/
     }
 
     return;
