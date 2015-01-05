@@ -12,7 +12,7 @@ int SERIAL_Open(const char* dev)
     {
         //fcntl(fd, F_SETOWN, getpid());
         //fcntl(fd, 0, FASYNC);
-        fcntl(fd, F_SETFL, 0);
+        fcntl(fd, F_SETFL, FNDELAY);
 
     }
 

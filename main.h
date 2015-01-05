@@ -11,17 +11,17 @@ typedef enum
     len,        /*数据长度*/
     checksum1,  /*校验和高位*/
     checksum2,  /*校验和低位*/
-    tail        /*尾包*/
+    tail,        /*尾包*/
+    done         /*完成*/
 } ReadStateTypeDef;
 
 typedef struct
 {
-    volatile ReadStateTypeDef state;
+    ReadStateTypeDef  state;
     uint8_t*          pRxBuf;
-    uint32_t receiveSum;
+    uint32_t          receiveSum;
     uint32_t          receiveCount;
     uint32_t          receiveBuffIndex;
-    volatile uint8_t  receiveOK;
 } ReadSMTypeDef;
 
 /*functions*/
