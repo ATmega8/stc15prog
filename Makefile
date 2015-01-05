@@ -262,7 +262,7 @@ top_builddir = .
 top_srcdir = .
 stcprog_SOURCES = main.c serial.c
 stcprog_CFLAGS = -g -Wall
-stcprog_LDFLAGS = -lrt
+stcprog_LDFLAGS = -lrt 
 all: all-am
 
 .SUFFIXES:

@@ -11,8 +11,8 @@ int SERIAL_Open(const char* dev)
     else
     {
         //fcntl(fd, F_SETOWN, getpid());
-        fcntl(fd, 0, FASYNC);
-        //fcntl(fd, F_SETFL, 0);
+        //fcntl(fd, 0, FASYNC);
+        fcntl(fd, F_SETFL, 0);
 
     }
 

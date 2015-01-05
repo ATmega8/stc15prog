@@ -6,4 +6,5 @@ stcprog
 stcprog-main.o
 stcprog-serial.o
 autom4te.cache
+.deps
 
