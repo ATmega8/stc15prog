@@ -93,7 +93,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_stcprog_OBJECTS = stcprog-main.$(OBJEXT) stcprog-serial.$(OBJEXT)
+am_stcprog_OBJECTS = stcprog-main.$(OBJEXT) stcprog-serial.$(OBJEXT) \
+	stcprog-frame.$(OBJEXT)
 stcprog_OBJECTS = $(am_stcprog_OBJECTS)
 stcprog_LDADD = $(LDADD)
 stcprog_LINK = $(CCLD) $(stcprog_CFLAGS) $(CFLAGS) $(stcprog_LDFLAGS) \
@@ -260,7 +261,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-stcprog_SOURCES = main.c serial.c
+stcprog_SOURCES = main.c serial.c frame.c
 stcprog_CFLAGS = -g -Wall
 stcprog_LDFLAGS = -lrt 
 all: all-am
@@ -354,6 +355,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/stcprog-frame.Po
 include ./$(DEPDIR)/stcprog-main.Po
 include ./$(DEPDIR)/stcprog-serial.Po
 
@@ -398,6 +400,20 @@ stcprog-serial.obj: serial.c
 #	$(AM_V_CC)source='serial.c' object='stcprog-serial.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(stcprog_CFLAGS) $(CFLAGS) -c -o stcprog-serial.obj `if test -f 'serial.c'; then $(CYGPATH_W) 'serial.c'; else $(CYGPATH_W) '$(srcdir)/serial.c'; fi`
+
+stcprog-frame.o: frame.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(stcprog_CFLAGS) $(CFLAGS) -MT stcprog-frame.o -MD -MP -MF $(DEPDIR)/stcprog-frame.Tpo -c -o stcprog-frame.o `test -f 'frame.c' || echo '$(srcdir)/'`frame.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/stcprog-frame.Tpo $(DEPDIR)/stcprog-frame.Po
+#	$(AM_V_CC)source='frame.c' object='stcprog-frame.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(stcprog_CFLAGS) $(CFLAGS) -c -o stcprog-frame.o `test -f 'frame.c' || echo '$(srcdir)/'`frame.c
+
+stcprog-frame.obj: frame.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(stcprog_CFLAGS) $(CFLAGS) -MT stcprog-frame.obj -MD -MP -MF $(DEPDIR)/stcprog-frame.Tpo -c -o stcprog-frame.obj `if test -f 'frame.c'; then $(CYGPATH_W) 'frame.c'; else $(CYGPATH_W) '$(srcdir)/frame.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/stcprog-frame.Tpo $(DEPDIR)/stcprog-frame.Po
+#	$(AM_V_CC)source='frame.c' object='stcprog-frame.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(stcprog_CFLAGS) $(CFLAGS) -c -o stcprog-frame.obj `if test -f 'frame.c'; then $(CYGPATH_W) 'frame.c'; else $(CYGPATH_W) '$(srcdir)/frame.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

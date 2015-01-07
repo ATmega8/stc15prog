@@ -1,6 +1,4 @@
 aclocal.m4
-compile
-depcomp
 Makefile.in
 stcprog
 stcprog-main.o
