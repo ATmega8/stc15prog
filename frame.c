@@ -1,6 +1,6 @@
 #include "main.h"
 
-int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
+int FRAME_StartFrame(FrameTypeDef* frame, int fd)
 {
     /*激活帧*/
     const uint8_t writeValue = 0x7F;
@@ -23,6 +23,9 @@ int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
     readSM.receiveSum = 0;
     readSM.receiveCount = 0;
     readSM.receiveBuffIndex = 0;
+
+
+    printf("FRAME_StartFrame:Starting\n");
 
     while(1)
     {
@@ -76,6 +79,82 @@ int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
 
     frame->frameLen = readSM.receiveBuffIndex;
 
+    printf("FRAME_StartFrame:Done\n");
+
+    return 0;
+}
+
+int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
+{
+
+    /*读返回状态*/
+    int nread;
+
+    /*读缓存*/
+    int8_t readBuf[255];
+
+    /*缓存指针*/
+    uint8_t* pRead = (uint8_t*)&readBuf;
+
+    /*创建状态机*/
+    ReadSMTypeDef readSM;
+
+    /*状态机初始化*/
+    readSM.state = wait;
+    readSM.pRxBuf = frame->frameBuf;
+    readSM.receiveSum = 0;
+    readSM.receiveCount = 0;
+    readSM.receiveBuffIndex = 0;
+
+    printf("FRAME_ReadFrame:Starting\n");
+
+    while(1)
+    {
+        /*等待10ms*/
+        usleep(1000);
+
+        /*读取串口*/
+        pRead = (uint8_t*)&readBuf;
+
+        while((nread = read(fd, (void*)pRead, 1)) != 0)
+        {
+            if(errno == EAGAIN)
+                break;
+
+            if(nread == -1)
+            {
+                if(errno == EINTR)
+                    continue;
+                perror("read");
+                break;
+            }
+
+            /*指针地址自增*/
+            pRead += nread;
+        }
+
+        pRead = (uint8_t*)&readBuf;
+
+        if(nread > 0)
+        {
+
+            while(nread--)
+            {
+                /*执行状态机*/
+                FRAME_ReadSMDispatch(&readSM, *pRead);
+                pRead++;
+            }
+        }
+
+        if(readSM.state == done)
+            break;
+    }
+
+    frame->frameLen = readSM.receiveBuffIndex;
+
+
+    printf("FRAME_ReadFrame:Done\n");
+
     return 0;
 }
 
@@ -98,7 +177,7 @@ void FRAME_ReadSMDispatch(ReadSMTypeDef* readSM, uint8_t buf)
                 case head1:      /*帧头 0x46*/
                    if(buf == 0xB9)
                    {
-                       printf("READ_Dispatch: Get frame head\n");
+                       printf("READ_Dispatch:Get frame head\n");
                        readSM->state = head2;
                        return;
                    }
@@ -174,7 +253,7 @@ void FRAME_ReadSMDispatch(ReadSMTypeDef* readSM, uint8_t buf)
                    }
                    else
                    {
-                       printf("READ_Dispath:check sum low byte error \nreceive: %d\nsum: %d\n", buf, readSM->receiveSum & 0x000000FF);
+                       printf("READ_Dispatch:check sum low byte error \nreceive: %d\nsum: %d\n", buf, readSM->receiveSum & 0x000000FF);
                        readSM->state = wait;
                        return;
                    }
@@ -182,7 +261,7 @@ void FRAME_ReadSMDispatch(ReadSMTypeDef* readSM, uint8_t buf)
                 case tail:       /*尾包*/
                    if(buf == 0x16)
                    {
-                       printf("READ_Dispath:OK\n");
+                       printf("READ_Dispatch:OK\n");
                        readSM->state = done;
                        return;
                    }

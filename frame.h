@@ -39,4 +39,5 @@ typedef struct
 /*functions*/
 void FRAME_ReadSMDispatch(ReadSMTypeDef* readSM, uint8_t buf);
 int FRAME_ReadFrame(FrameTypeDef* frame, int fd);
+int FRAME_StartFrame(FrameTypeDef* frame, int fd);
 

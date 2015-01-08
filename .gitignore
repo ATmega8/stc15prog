@@ -1,8 +1,5 @@
-aclocal.m4
-Makefile.in
 stcprog
 stcprog-main.o
 stcprog-serial.o
 autom4te.cache
-.deps
 

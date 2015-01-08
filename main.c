@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
 
     const char dev[] = "/dev/ttyUSB0";
-    int fd, i;
+    int fd;
     uint8_t RxBuf[255];
 
     FrameTypeDef frame;
@@ -40,10 +40,7 @@ int main(int argc, char** argv)
 
     printf("Open serial OK\n");
 
-    FRAME_ReadFrame(&frame, fd);
-
-    for(i = 0; i < frame.frameLen; i++)
-        printf("\nindex: %d value: 0x%X\n", i, *(frame.frameBuf+ i));
+    FRAME_StartFrame(&frame, fd);
 
     return 0;
 }
