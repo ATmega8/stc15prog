@@ -1,9 +1,13 @@
 #include "main.h"
+#include <time.h>
 
 int FRAME_StartFrame(FrameTypeDef* frame, int fd)
 {
     /*激活帧*/
     const uint8_t writeValue = 0x7F;
+
+    struct timespec req = { .tv_sec  = 0,
+                            .tv_nsec = 10000000};
 
     /*读写返回状态*/
     int nwrite, nread;
@@ -38,7 +42,7 @@ int FRAME_StartFrame(FrameTypeDef* frame, int fd)
         }
 
         /*等待10ms*/
-        usleep(1000);
+        nanosleep(&req, NULL);
 
         /*读取串口*/
         pRead = (uint8_t*)&readBuf;
@@ -90,6 +94,9 @@ int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
     /*读返回状态*/
     int nread;
 
+    struct timespec req = { .tv_sec  = 0,
+                            .tv_nsec = 10000000};
+
     /*读缓存*/
     int8_t readBuf[255];
 
@@ -111,7 +118,7 @@ int FRAME_ReadFrame(FrameTypeDef* frame, int fd)
     while(1)
     {
         /*等待10ms*/
-        usleep(1000);
+        nanosleep(&req, NULL);
 
         /*读取串口*/
         pRead = (uint8_t*)&readBuf;
