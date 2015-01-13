@@ -2,4 +2,5 @@ stcprog
 stcprog-main.o
 stcprog-serial.o
 autom4te.cache
+test.bin
 
